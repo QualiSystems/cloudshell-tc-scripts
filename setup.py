@@ -24,4 +24,5 @@ setup(
     version=read_file("version.txt"),
     package_data={"": ["*.txt"]},
     include_package_data=True,
+    entry_points={"console_scripts": ["cloudshell-tc-scripts = scripts.cli:cli"]},
 )
