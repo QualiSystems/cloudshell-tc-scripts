@@ -1,16 +1,16 @@
 repos:
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.7.4
+    hooks:
+      - id: pyupgrade
   - repo: https://github.com/timothycrosley/isort
-    rev: 5.6.4
+    rev: 5.7.0
     hooks:
       - id: isort
-        language_version: python3.7
-        exclude: '/mibs'
   - repo: https://github.com/python/black
     rev: 20.8b1
     hooks:
       - id: black
-        language_version: python3.7
-        exclude: '/mibs'
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.4
     hooks:
@@ -22,5 +22,3 @@ repos:
           flake8-print,
           flake8-eradicate,
         ]
-        language_version: python3.7
-        exclude: '/mibs'
