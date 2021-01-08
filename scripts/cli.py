@@ -84,7 +84,6 @@ def trigger_auto_tests(
 )
 @click.option("--vcs-root-url", required=True, help="VCS URL")
 @click.option("--pr-number", required=True, help="PR number")
-@click.option("--target-branch", required=True, help="Target branch of the PR")
 @click.option(
     "--valid-branches",
     default="master",
@@ -105,14 +104,12 @@ def trigger_auto_tests(
 def verify_user_can_trigger(
     vcs_root_url: str,
     pr_number: str,
-    target_branch: str,
     valid_branches: str,
     token: str,
 ):
     verify_user_can_trigger_build(
         vcs_root_url=vcs_root_url,
         pr_number=pr_number,
-        target_branch=target_branch,
         valid_branches=valid_branches,
         token=token,
     )
