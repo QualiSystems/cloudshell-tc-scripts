@@ -7,7 +7,7 @@ def read_file(file_name: str) -> str:
 
 
 setup(
-    name="cloudshell-tc-scrips",
+    name="cloudshell-tc-scripts",
     url="http://www.qualisystems.com/",
     author="QualiSystems",
     author_email="info@qualisystems.com",
