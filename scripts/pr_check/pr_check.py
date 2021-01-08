@@ -1,3 +1,4 @@
+import click
 from github import Github
 from github.PullRequest import PullRequest
 from github.Repository import Repository
@@ -41,5 +42,8 @@ def verify_user_can_trigger_build(
     repo = github.get_repo(f"{owner}/{repo_name}")
     pull = repo.get_pull(int(pr_number))
 
-    validate_pr_target_branch_in_valid_branches(pull, valid_branches)
-    validate_author_pr_is_member_of_org(repo, github, pull)
+    try:
+        validate_pr_target_branch_in_valid_branches(pull, valid_branches)
+        validate_author_pr_is_member_of_org(repo, github, pull)
+    except ValueError as e:
+        click.echo(f"teamcity[buildStop comment='{str(e)}' readdToQueue='false']")
