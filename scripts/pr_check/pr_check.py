@@ -46,4 +46,4 @@ def verify_user_can_trigger_build(
         validate_pr_target_branch_in_valid_branches(pull, valid_branches)
         validate_author_pr_is_member_of_org(repo, github, pull)
     except ValueError as e:
-        click.echo(f"teamcity[buildStop comment='{str(e)}' readdToQueue='false']")
+        click.echo(f"##teamcity[buildStop comment='{str(e)}' readdToQueue='false']")
