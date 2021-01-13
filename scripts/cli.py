@@ -83,7 +83,11 @@ def trigger_auto_tests(
     ),
 )
 @click.option("--vcs-root-url", required=True, help="VCS URL")
-@click.option("--pr-number", required=True, help="PR number")
+@click.option(
+    "--branch-name",
+    required=True,
+    help="The branch name. Branch contains pull request id or branch name",
+)
 @click.option(
     "--valid-branches",
     default="master",
@@ -103,14 +107,14 @@ def trigger_auto_tests(
 )
 def verify_user_can_trigger(
     vcs_root_url: str,
-    pr_number: str,
+    branch_name: str,
     valid_branches: str,
     token: str,
 ):
     verify_user_can_trigger_build(
         vcs_root_url=vcs_root_url,
-        pr_number=pr_number,
-        valid_branches=valid_branches,
+        branch_name=branch_name,
+        valid_branches=valid_branches.split(","),
         token=token,
     )
 
