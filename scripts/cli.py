@@ -58,7 +58,7 @@ def trigger_auto_tests(
     tc_user: str,
     tc_password: str,
 ) -> bool:
-    supported_shells = list(map(str.strip, supported_shells.split(";")))
+    supported_shells = list(filter(bool, map(str.strip, supported_shells.split(";"))))
     is_success = main(
         supported_shells=supported_shells,
         automation_project_id=automation_project_id,
