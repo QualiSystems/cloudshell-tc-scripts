@@ -92,7 +92,7 @@ def new_trigger_builds(tc_user: str, tc_password: str):
     tc = TeamCity("http://tc", auth=(tc_user, tc_password))  # noqa
     import rpdb
 
-    rpdb.set_trace()
+    rpdb.set_trace("0.0.0.0")
     pass
 
 
