@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import click
+from dohq_teamcity import TeamCity
 
 from scripts.pr_check.pr_check import verify_user_can_trigger_build
 from scripts.trigger_auto_tests.main import main
@@ -47,6 +48,14 @@ def cli():
 @click.option("--tc-url", required=True, help="TeamCity URL")
 @click.option("--tc-user", required=True, help="TeamCity User")
 @click.option("--tc-password", required=True, help="TeamCity Password")
+@click.option(
+    "--re-run",
+    required=True,
+    default=False,
+    show_default=True,
+    type=bool,
+    help="Re run a last failed automated tests",
+)
 def trigger_auto_tests(
     supported_shells: str,
     automation_project_id: str,
@@ -57,6 +66,7 @@ def trigger_auto_tests(
     tc_url: str,
     tc_user: str,
     tc_password: str,
+    re_run: bool,
 ) -> bool:
     supported_shells = list(filter(bool, map(str.strip, supported_shells.split(";"))))
     is_success = main(
@@ -73,6 +83,17 @@ def trigger_auto_tests(
     if not is_success:
         sys.exit(1)
     return is_success
+
+
+@cli.command("new-trigger-builds")
+@click.option("--tc-user", required=True, help="TeamCity User")
+@click.option("--tc-password", required=True, help="TeamCity Password")
+def new_trigger_builds(tc_user: str, tc_password: str):
+    tc = TeamCity("http://tc", auth=(tc_user, tc_password))
+    import rpdb
+
+    rpdb.set_trace()
+    pass
 
 
 @cli.command(

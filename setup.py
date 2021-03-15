@@ -18,6 +18,8 @@ setup(
         "cloudshell-pip-download~=0.4",
         "requests~=2.25",
         "pydantic~=1.7",
+        "dohq-teamcity",
+        "rpdb",
     ],
     tests_require=read_file("test_requirements.txt"),
     python_requires="~=3.9",
