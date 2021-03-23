@@ -5,7 +5,8 @@ import click
 from dohq_teamcity import TeamCity
 
 from scripts.pr_check.pr_check import verify_user_can_trigger_build
-from scripts.trigger_auto_tests.main import main
+from scripts.trigger_auto_tests.main import main as new_main
+from scripts.trigger_auto_tests.main_old import main
 from scripts.trigger_auto_tests.utils.cli_helpers import PathPath
 
 
@@ -93,7 +94,7 @@ def new_trigger_builds(tc_user: str, tc_password: str):
     import rpdb
 
     rpdb.set_trace("0.0.0.0")
-    pass
+    new_main(tc_user, tc_password)
 
 
 @cli.command(
