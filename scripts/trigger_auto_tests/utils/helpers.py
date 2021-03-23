@@ -2,6 +2,7 @@ import os
 from pathlib import Path, PosixPath
 
 from dohq_teamcity import Build, ModelProperty, Properties, TeamCity
+from dohq_teamcity.rest import RESTClientObject
 from github import Github, Repository, UnknownObjectException
 from pip_download import PipDownloader
 from pydantic import BaseModel
@@ -88,6 +89,7 @@ def trigger_auto_tests_build2(
         ]
     )
     new_build = Build(build_type_id=bt.id, branch_name="master", properties=properties)
+    update_tc_csrf(tc)
     build = tc.build_queues.queue_new_build(body=new_build, move_to_top=True)
     return build.id
 
@@ -98,6 +100,12 @@ def is_build_finished(build: Build) -> bool:
 
 def is_build_success(build: Build) -> bool:
     return build.status.lower() == "success"
+
+
+def update_tc_csrf(tc: TeamCity):
+    # if not do this before triggering build it fails with 403: CSRF =/
+    # https://github.com/devopshq/teamcity/issues/24
+    tc.rest_client = RESTClientObject(tc.configuration)
 
 
 class AutoTestsInfo(BaseModel):
