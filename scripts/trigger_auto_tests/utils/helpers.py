@@ -102,7 +102,7 @@ def is_build_success(build: Build) -> bool:
 
 class AutoTestsInfo(BaseModel):
     number: int
-    params: dict[str, str]
+    params: dict
     vcs_url: str
     commit_id: str
     path: Path
