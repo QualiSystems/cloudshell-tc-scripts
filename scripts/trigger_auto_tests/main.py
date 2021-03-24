@@ -37,10 +37,19 @@ def main(tc_user: str, tc_password: str):
     while triggered_builds:
         time.sleep(BUILDS_CHECK_DELAY)
         for shell_name, build_id in triggered_builds.copy().items():
-            build = tc.builds.get(f"id:{build_id}")
-            if is_build_finished(build):
-                builds_statuses[shell_name] = is_build_success(build)
-                triggered_builds.pop(shell_name)
+            try:
+                build = tc.builds.get(f"id:{build_id}")
+                if is_build_finished(build):
+                    click.echo(
+                        f"{shell_name} Automation tests is finished "
+                        f"with status {build.status}"
+                    )
+                    builds_statuses[shell_name] = is_build_success(build)
+                    triggered_builds.pop(shell_name)
+            except Exception as e:
+                errors.append(e)
+                click.echo(e, err=True)
 
     if errors:
         raise Exception("There were errors running automation tests.")
+    return all(builds_statuses.values())
