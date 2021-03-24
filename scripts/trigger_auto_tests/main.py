@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 import click
 from dohq_teamcity import TeamCity
@@ -18,7 +19,7 @@ BUILDS_CHECK_DELAY = 10
 
 def main(tc_user: str, tc_password: str):
     errors = []
-    triggered_builds = {}
+    triggered_builds: dict[str, int] = {}
     tc = TeamCity(TC_URL, auth=(tc_user, tc_password))
     tests_info = AutoTestsInfo.get_current(tc)
     if tests_info.re_run_builds:
@@ -28,7 +29,8 @@ def main(tc_user: str, tc_password: str):
 
     for shell_name in tests_info.supported_shells:
         try:
-            triggered_builds = _run_tests_for_shell(tc, shell_name, tests_info)
+            build_id = _run_tests_for_shell(tc, shell_name, tests_info)
+            triggered_builds[shell_name] = build_id
         except Exception as e:
             errors.append(e)
             click.echo(e, err=True)
@@ -43,8 +45,8 @@ def main(tc_user: str, tc_password: str):
 
 def _run_tests_for_shell(
     tc: TeamCity, shell_name: str, tests_info: AutoTestsInfo
-) -> dict[str, int]:
-    triggered_builds = {}
+) -> Optional[int]:
+    build_id = None
     if is_shell_uses_package(shell_name, tests_info):
         if tests_info.re_run_builds:
             if is_last_build_successful(tc, shell_name, tests_info):
@@ -55,14 +57,12 @@ def _run_tests_for_shell(
             else:
                 click.echo(f"{shell_name} Re run automation tests")
                 build_id = trigger_auto_tests_build2(tc, shell_name, tests_info)
-                triggered_builds[shell_name] = build_id
         else:
             click.echo(f"{shell_name} Automation tests build triggering")
             build_id = trigger_auto_tests_build2(tc, shell_name, tests_info)
-            triggered_builds[shell_name] = build_id
     else:
         click.echo(f"{shell_name} is not uses package with this version, skipped tests")
-    return triggered_builds
+    return build_id
 
 
 def _wait_build_finish(
