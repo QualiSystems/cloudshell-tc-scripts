@@ -1,7 +1,7 @@
 import os
 from pathlib import Path, PosixPath
 
-from dohq_teamcity import Build, ModelProperty, Properties, TeamCity
+from dohq_teamcity import Build, BuildType, ModelProperty, Properties, TeamCity
 from dohq_teamcity.rest import RESTClientObject
 from github import Github, Repository, UnknownObjectException
 from pip_download import PipDownloader
@@ -94,6 +94,26 @@ def trigger_auto_tests_build2(
     return build.id
 
 
+def is_last_build_successful(
+    tc: TeamCity, shell_name: str, tests_info: "AutoTestsInfo"
+) -> bool:
+    bt: BuildType = tc.projects.get_build_type(
+        project_locator=f"id:{tests_info.automation_project_id}",
+        bt_locator=f"name:{shell_name}",
+    )
+    for build in bt.get_builds():
+        params = get_build_params(build)
+        if (
+            params["conf.triggered_by_project.url"] == tests_info.vcs_url
+            and params["conf.triggered_by_project.commit_id"] == tests_info.commit_id
+        ):
+            is_success = is_build_success(build)
+            break
+    else:
+        is_success = False
+    return is_success
+
+
 def is_build_finished(build: Build) -> bool:
     return build.state.lower() == "finished"
 
@@ -108,6 +128,10 @@ def update_tc_csrf(tc: TeamCity):
     tc.rest_client = RESTClientObject(tc.configuration)
 
 
+def get_build_params(build: Build) -> dict:
+    return {pr.name: pr.value for pr in build.get_build_actual_parameters()}
+
+
 class AutoTestsInfo(BaseModel):
     number: int
     params: dict
@@ -117,6 +141,7 @@ class AutoTestsInfo(BaseModel):
     name: str
     supported_shells: list[str]
     automation_project_id: str
+    re_run_builds: bool
 
     @classmethod
     def get_current(cls, tc: TeamCity) -> "AutoTestsInfo":
@@ -131,13 +156,14 @@ class AutoTestsInfo(BaseModel):
         build = bt.get_builds(
             locator=f"number:{number},branch:(unspecified:any),running:true"
         )[0]
-        params = {pr.name: pr.value for pr in build.get_build_actual_parameters()}
+        params = get_build_params(build)
         vcs_url = params["vcsroot.url"]
         path = PosixPath(params["teamcity.build.checkoutDir"])
         supported_shells = list(
             filter(bool, map(str.strip, params["conf.shells"].split(";")))
         )
         automation_project_id = params["automation.project.id"]
+        re_run_builds = params["re-run-builds"]
         return cls(
             number=int(number),
             params=params,
@@ -147,4 +173,5 @@ class AutoTestsInfo(BaseModel):
             name=name,
             supported_shells=supported_shells,
             automation_project_id=automation_project_id,
+            re_run_builds=re_run_builds,
         )
