@@ -1,4 +1,3 @@
-import socket
 import sys
 from pathlib import Path
 
@@ -92,12 +91,9 @@ def trigger_auto_tests(
 @click.option("--tc-password", required=True, help="TeamCity Password")
 def new_trigger_builds(tc_user: str, tc_password: str):
     tc = TeamCity("http://tc", auth=(tc_user, tc_password))  # noqa
-    import rpdb
-
-    ip = socket.gethostbyname(socket.gethostname())
-    click.echo(f"IP: {ip}")
-    rpdb.set_trace("0.0.0.0")
-    new_main(tc_user, tc_password)
+    is_success = new_main(tc_user, tc_password)
+    if not is_success:
+        sys.exit(1)
 
 
 @cli.command(

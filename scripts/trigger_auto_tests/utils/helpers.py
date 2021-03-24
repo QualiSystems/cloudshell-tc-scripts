@@ -88,7 +88,7 @@ def trigger_auto_tests_build2(
             ModelProperty("conf.triggered_by_project.commit_id", tests_info.commit_id),
         ]
     )
-    new_build = Build(build_type_id=bt.id, branch_name="master", properties=properties)
+    new_build = Build(build_type_id=bt.id, properties=properties)
     update_tc_csrf(tc)
     build = tc.build_queues.queue_new_build(body=new_build, move_to_top=True)
     return build.id
