@@ -91,9 +91,7 @@ def trigger_auto_tests(
 @click.option("--tc-password", required=True, help="TeamCity Password")
 def new_trigger_builds(tc_user: str, tc_password: str):
     tc = TeamCity("http://tc", auth=(tc_user, tc_password))  # noqa
-    is_success = new_main(tc_user, tc_password)
-    if not is_success:
-        sys.exit(1)
+    new_main(tc_user, tc_password)
 
 
 @cli.command(
