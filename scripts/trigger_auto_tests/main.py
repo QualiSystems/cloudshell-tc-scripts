@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from typing import Optional
 
 import click
@@ -29,8 +30,8 @@ def main(tc_user: str, tc_password: str):
     else:
         click.echo("Run automated tests")
 
-    tc_msg.testCount(len(tests_info.supported_shells))
     with tc_msg.testSuite("Automation tests"):
+        tc_msg.testCount(len(tests_info.supported_shells))
         for shell_name in tests_info.supported_shells:
             try:
                 build_id = _run_tests_for_shell(tc, tc_msg, shell_name, tests_info)
@@ -81,23 +82,26 @@ def _wait_build_finish(
 ) -> tuple[dict[str, bool], list[Exception]]:
     builds_statuses = {}
     errors = []
-    start_time = time.time()
+    start_time = datetime.now()
     while triggered_builds:
         time.sleep(BUILDS_CHECK_DELAY)
         for shell_name, build_id in triggered_builds.copy().items():
             try:
                 build = tc.builds.get(f"id:{build_id}")
                 if is_build_finished(build):
-                    with tc_msg.test(shell_name, testDuration=time.time() - start_time):
-                        is_success = is_build_success(build)
-                        builds_statuses[shell_name] = is_success
-                        triggered_builds.pop(shell_name)
-                        if not is_success:
-                            tc_msg.testFailed(
-                                shell_name,
-                                f"{shell_name} Automation tests is finished"
-                                f" with status {build.status}",
-                            )
+                    tc_msg.testStarted(shell_name)
+                    is_success = is_build_success(build)
+                    builds_statuses[shell_name] = is_success
+                    triggered_builds.pop(shell_name)
+                    if not is_success:
+                        tc_msg.testFailed(
+                            shell_name,
+                            f"{shell_name} Automation tests is finished"
+                            f" with status {build.status}",
+                        )
+                    tc_msg.testFinished(
+                        shell_name, testDuration=datetime.now() - start_time
+                    )
             except Exception as e:
                 errors.append(e)
                 click.echo(e, err=True)
