@@ -35,7 +35,8 @@ def main(tc_user: str, tc_password: str):
         for shell_name in tests_info.supported_shells:
             try:
                 build_id = _run_tests_for_shell(tc, tc_msg, shell_name, tests_info)
-                triggered_builds[shell_name] = build_id
+                if build_id:
+                    triggered_builds[shell_name] = build_id
             except Exception as e:
                 errors.append(e)
                 click.echo(e, err=True)
