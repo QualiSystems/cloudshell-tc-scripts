@@ -12,7 +12,7 @@ from scripts.trigger_auto_tests.utils.helpers import (
     is_build_success,
     is_last_build_successful,
     is_shell_uses_package,
-    trigger_auto_tests_build2,
+    trigger_auto_tests_build,
 )
 
 TC_URL = "http://tc"
@@ -58,18 +58,21 @@ def _run_tests_for_shell(
     build_id = None
     if is_shell_uses_package(shell_name, tests_info):
         if tests_info.re_run_builds:
-            if is_last_build_successful(tc, shell_name, tests_info):
+            success, build_url = is_last_build_successful(tc, shell_name, tests_info)
+            if success:
                 tc_msg.testIgnored(
                     shell_name,
                     f"{shell_name} last auto tests for this package and commit "
-                    f"id was successful, skip it",
+                    f"id was successful, skip it. {build_url}",
                 )
             else:
-                click.echo(f"{shell_name} Re run automation tests")
-                build_id = trigger_auto_tests_build2(tc, shell_name, tests_info)
+                build_id, build_url = trigger_auto_tests_build(
+                    tc, shell_name, tests_info
+                )
+                click.echo(f"{shell_name} Re run automation tests. {build_url}")
         else:
-            click.echo(f"{shell_name} Automation tests build triggering")
-            build_id = trigger_auto_tests_build2(tc, shell_name, tests_info)
+            build_id, build_url = trigger_auto_tests_build(tc, shell_name, tests_info)
+            click.echo(f"{shell_name} Automation tests build triggered. {build_url}")
     else:
         tc_msg.testIgnored(
             shell_name,

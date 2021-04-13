@@ -7,8 +7,6 @@ from github import Github, Repository, UnknownObjectException
 from pip_download import PipDownloader
 from pydantic import BaseModel
 
-from scripts.trigger_auto_tests.utils.tc_api import TeamCityAPI
-
 REPOS_OWNER = "QualiSystems"
 
 
@@ -47,37 +45,10 @@ def is_shell_uses_package(shell_name: str, tests_info: "AutoTestsInfo") -> bool:
 
 
 def trigger_auto_tests_build(
-    tc_api: TeamCityAPI,
-    shell_name: str,
-    automation_project_id: str,
-    package_vcs_url: str,
-    package_commit_id: str,
-) -> int:
-    locator_data = {
-        "name": shell_name,
-        "project": automation_project_id,
-    }
-    additional_data = {
-        "triggeringOptions": {"queueAtTop": True},
-        "properties": {
-            "property": [
-                {"name": "conf.triggered_by_project.url", "value": package_vcs_url},
-                {
-                    "name": "conf.triggered_by_project.commit_id",
-                    "value": package_commit_id,
-                },
-            ]
-        },
-    }
-    data = tc_api.trigger_builds(locator_data, additional_data=additional_data)
-    return data.id
-
-
-def trigger_auto_tests_build2(
     tc: TeamCity,
     shell_name: str,
     tests_info: "AutoTestsInfo",
-) -> int:
+) -> tuple[int, str]:
     bt = tc.projects.get_build_type(
         project_locator=f"id:{tests_info.automation_project_id}",
         bt_locator=f"name:{shell_name}",
@@ -91,16 +62,17 @@ def trigger_auto_tests_build2(
     new_build = Build(build_type_id=bt.id, properties=properties)
     update_tc_csrf(tc)
     build = tc.build_queues.queue_new_build(body=new_build, move_to_top=True)
-    return build.id
+    return build.id, build.web_url
 
 
 def is_last_build_successful(
     tc: TeamCity, shell_name: str, tests_info: "AutoTestsInfo"
-) -> bool:
+) -> tuple[bool, str]:
     bt: BuildType = tc.projects.get_build_type(
         project_locator=f"id:{tests_info.automation_project_id}",
         bt_locator=f"name:{shell_name}",
     )
+    build_url = ""
     for build in bt.get_builds():
         params = get_build_params(build)
         if (
@@ -108,10 +80,11 @@ def is_last_build_successful(
             and params["conf.triggered_by_project.commit_id"] == tests_info.commit_id
         ):
             is_success = is_build_success(build)
+            build_url = build.web_url
             break
     else:
         is_success = False
-    return is_success
+    return is_success, build_url
 
 
 def is_build_finished(build: Build) -> bool:
