@@ -1,5 +1,8 @@
+from typing import Optional
+
 import click
 
+from scripts.client import TC
 from scripts.pr_check.pr_check import verify_user_can_trigger_build
 from scripts.trigger_auto_tests.main import main
 
@@ -61,6 +64,19 @@ def verify_user_can_trigger(
         valid_branches=valid_branches.split(","),
         token=token,
     )
+
+
+@cli.command("get-commits-from-changes", help="Return commits from the VCS changes.")
+@click.option("--tc-url", required=False, help="TeamCity URL")
+@click.option("--tc-user", required=False, help="TeamCity User")
+@click.option("--tc-password", required=False, help="TeamCity Password")
+def get_commits_from_changes(
+    tc_url: Optional[str], tc_user: Optional[str], tc_password: Optional[str]
+):
+    tc = TC(tc_url, tc_user, tc_password)
+    current_build = tc.get_current_build()
+    commits = tc.get_build_commits(current_build)
+    click.echo(" ".join(commits))
 
 
 if __name__ == "__main__":

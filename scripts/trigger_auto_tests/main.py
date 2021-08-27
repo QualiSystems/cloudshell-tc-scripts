@@ -6,7 +6,7 @@ import click
 from dohq_teamcity import TeamCity
 from teamcity.messages import TeamcityServiceMessages
 
-from scripts.trigger_auto_tests.utils.helpers import (
+from scripts.utils.trigger_helpers import (
     AutoTestsInfo,
     is_build_finished,
     is_build_success,

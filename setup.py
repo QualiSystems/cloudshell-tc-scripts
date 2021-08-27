@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pygithub~=1.54",
-        "click~=7.1",
+        "click~=8.0",
         "cloudshell-pip-download~=0.4",
         "requests~=2.25",
         "pydantic~=1.7",
@@ -26,5 +26,5 @@ setup(
     version=read_file("version.txt"),
     package_data={"": ["*.txt"]},
     include_package_data=True,
-    entry_points={"console_scripts": ["cloudshell-tc-scripts = scripts.cli:cli"]},
+    entry_points={"console_scripts": ["tc = scripts.cli:cli"]},
 )
