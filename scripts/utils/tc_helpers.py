@@ -2,7 +2,7 @@ from typing import Optional
 
 from dohq_teamcity import TeamCity
 
-from scripts.utils.env import TcScriptEnv
+from scripts.utils.models import TcScriptEnv
 
 
 def get_tc_client(
