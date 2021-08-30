@@ -3,8 +3,6 @@ from pathlib import PosixPath
 from dohq_teamcity import Build
 from pydantic import BaseSettings, Field
 
-from scripts.client import TC
-
 ENV_TC_URL_NAME = "TC_URL"
 ENV_TC_USER_NAME = "TC_USER"
 ENV_TC_PASSWORD_NAME = "TC_PASSWORD"
@@ -33,6 +31,8 @@ class AutoTestsInfo(BuildEnv):
 
     @classmethod
     def from_current_build(cls, build: "Build") -> "AutoTestsInfo":
+        from scripts.client import TC
+
         params = TC.get_build_params(build)
         return cls(
             supported_shells=list(
