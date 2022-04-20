@@ -15,7 +15,6 @@ setup(
     install_requires=[
         "pygithub~=1.54",
         "click~=8.0",
-        "cloudshell-pip-download~=0.4",
         "requests~=2.25",
         "pydantic~=1.7",
         "dohq-teamcity~=1.0.5",

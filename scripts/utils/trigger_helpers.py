@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, Optional
 import click
 from teamcity.messages import TeamcityServiceMessages
 
-from scripts.utils.shell_helpers import is_shell_uses_package
-
 if TYPE_CHECKING:
     from scripts.client import TC
     from scripts.utils.models import AutoTestsInfo
@@ -48,13 +46,7 @@ def _run_tests_for_shell(
     shell_name: str,
     tests_info: "AutoTestsInfo",
 ) -> Optional[int]:
-    if not is_shell_uses_package(shell_name, tests_info):
-        tc_msg.testIgnored(
-            shell_name,
-            f"{shell_name} is not uses package with this version, skipped tests",
-        )
-        return
-    elif tests_info.re_run_builds and _is_last_build_successful(
+    if tests_info.re_run_builds and _is_last_build_successful(
         tc, tc_msg, shell_name, tests_info
     ):
         return
