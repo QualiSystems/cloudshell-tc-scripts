@@ -1,4 +1,5 @@
 from pathlib import PosixPath
+from typing import Optional
 
 from dohq_teamcity import Build
 from pydantic import BaseSettings, Field
@@ -28,6 +29,7 @@ class AutoTestsInfo(BuildEnv):
     re_run_builds: bool
     vcs_url: str
     path: PosixPath
+    qualix_host: Optional[str] = None
 
     @classmethod
     def from_current_build(cls, build: "Build") -> "AutoTestsInfo":

@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 BUILDS_CHECK_DELAY = 10
 PARAM_TRIGGERED_BY_URL = "conf.triggered_by_project.url"
 PARAM_TRIGGERED_BY_COMMIT = "conf.triggered_by_project.commit_id"
+PARAM_QUALIX_HOST = "conf.triggered_by_project.qualix_ip"
 
 
 def trigger_tests(tests_info: "AutoTestsInfo", tc: "TC"):
@@ -105,12 +106,16 @@ def _trigger_auto_tests_build(
     tests_info: "AutoTestsInfo",
 ) -> tuple[int, str]:
     bt = tc.get_build_type(shell_name, project_id=tests_info.automation_project_id)
+    prop = {
+        PARAM_TRIGGERED_BY_URL: tests_info.vcs_url,
+        PARAM_TRIGGERED_BY_COMMIT: tests_info.commit_id,
+    }
+    if tests_info.qualix_host is not None:
+        prop[PARAM_QUALIX_HOST] = tests_info.qualix_host
+
     build = tc.trigger_build(
         bt.id,
-        {
-            PARAM_TRIGGERED_BY_URL: tests_info.vcs_url,
-            PARAM_TRIGGERED_BY_COMMIT: tests_info.commit_id,
-        },
+        prop,
     )
     return build.id, build.web_url
 
