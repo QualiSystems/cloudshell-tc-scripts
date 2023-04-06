@@ -26,4 +26,7 @@ setup(
     package_data={"": ["*.txt"]},
     include_package_data=True,
     entry_points={"console_scripts": ["tc = scripts.cli:cli"]},
+    description="Cloudshell TC scripts",
+    long_description="TC scripts for automation tests",
+    long_description_content_type="text/x-rst",
 )
