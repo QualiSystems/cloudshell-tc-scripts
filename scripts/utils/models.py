@@ -1,4 +1,5 @@
 from pathlib import PosixPath
+from typing import Optional
 
 from dohq_teamcity import Build
 from pydantic import BaseSettings, Field
@@ -12,7 +13,7 @@ DEFAULT_TC_URL = "http://tc"
 class BuildEnv(BaseSettings):
     bt_name: str = Field(..., env="TEAMCITY_BUILDCONF_NAME")
     project_name: str = Field(..., env="TEAMCITY_PROJECT_NAME")
-    build_num: int = Field(..., env="BUILD_NUMBER")
+    build_num: str = Field(..., env="BUILD_NUMBER")
     commit_id: str = Field(..., env="BUILD_VCS_NUMBER")
 
 
@@ -28,6 +29,7 @@ class AutoTestsInfo(BuildEnv):
     re_run_builds: bool
     vcs_url: str
     path: PosixPath
+    qualix_host: Optional[str] = None
 
     @classmethod
     def from_current_build(cls, build: "Build") -> "AutoTestsInfo":
@@ -40,6 +42,6 @@ class AutoTestsInfo(BuildEnv):
             ),
             automation_project_id=params["automation.project.id"],
             re_run_builds=params["re-run-builds"],
-            vcs_url=params["vcsroot.url"],
+            vcs_url=params.get("vcsroot.url", "empty"),
             path=PosixPath(params["teamcity.build.checkoutDir"]),
         )

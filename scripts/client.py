@@ -59,7 +59,7 @@ class TC:
     def yield_builds_from_bt(
         self,
         build_type: "BuildType",
-        build_num: Optional[int] = None,
+        build_num: Optional[str] = None,
         param_filter: Optional[dict[str, str]] = None,
     ) -> Generator["Build", None, None]:
         kwargs = {}
@@ -82,7 +82,7 @@ class TC:
     def get_build_from_bt(
         self,
         build_type: "BuildType",
-        build_num: Optional[int] = None,
+        build_num: Optional[str] = None,
         param_filter: Optional[dict[str, str]] = None,
     ) -> "Build":
         try:
