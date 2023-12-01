@@ -30,6 +30,7 @@ class AutoTestsInfo(BuildEnv):
     vcs_url: str
     path: PosixPath
     qualix_host: Optional[str] = None
+    qualix_version: Optional[str] = None
 
     @classmethod
     def from_current_build(cls, build: "Build") -> "AutoTestsInfo":

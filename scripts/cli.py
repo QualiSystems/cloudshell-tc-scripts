@@ -48,17 +48,22 @@ def get_commits_from_changes(
 @click.option("--tc-url", required=False, help="TeamCity URL")
 @click.option("--tc-user", required=False, help="TeamCity User")
 @click.option("--tc-password", required=False, help="TeamCity Password")
-@click.option("--qualix-host", required=True, help="Tested Qualix host")
+@click.option("--qualix-host", required=False, default=None, help="Tested Qualix host")
+@click.option(
+    "--qualix-version", required=False, default=None, help="Tested Qualix version"
+)
 def trigger_qualix_auto_tests(
     tc_url: Optional[str],
     tc_user: Optional[str],
     tc_password: Optional[str],
-    qualix_host: str,
+    qualix_host: Optional[str],
+    qualix_version: Optional[str],
 ):
     tc = TC(tc_url, tc_user, tc_password)
     current_build = tc.get_current_build()
     tests_info = AutoTestsInfo.from_current_build(current_build)
     tests_info.qualix_host = qualix_host
+    tests_info.qualix_version = qualix_version
     trigger_tests(tests_info, tc)
 
 
