@@ -31,6 +31,7 @@ class AutoTestsInfo(BuildEnv):
     path: PosixPath
     qualix_host: Optional[str] = None
     qualix_version: Optional[str] = None
+    image_tag: Optional[str] = None
 
     @classmethod
     def from_current_build(cls, build: "Build") -> "AutoTestsInfo":

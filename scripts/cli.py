@@ -52,18 +52,22 @@ def get_commits_from_changes(
 @click.option(
     "--qualix-version", required=False, default=None, help="Tested Qualix version"
 )
+@click.option("--image-tag", required=False, default=None, help="Tested Qualix image")
 def trigger_qualix_auto_tests(
     tc_url: Optional[str],
     tc_user: Optional[str],
     tc_password: Optional[str],
     qualix_host: Optional[str],
     qualix_version: Optional[str],
+    image_tag: Optional[str],
 ):
     tc = TC(tc_url, tc_user, tc_password)
     current_build = tc.get_current_build()
     tests_info = AutoTestsInfo.from_current_build(current_build)
     tests_info.qualix_host = qualix_host
     tests_info.qualix_version = qualix_version
+    tests_info.image_tag = image_tag
+
     trigger_tests(tests_info, tc)
 
 

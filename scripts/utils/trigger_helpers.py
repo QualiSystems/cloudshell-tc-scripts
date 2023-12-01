@@ -14,6 +14,7 @@ PARAM_TRIGGERED_BY_URL = "conf.triggered_by_project.url"
 PARAM_TRIGGERED_BY_COMMIT = "conf.triggered_by_project.commit_id"
 PARAM_QUALIX_HOST = "conf.triggered_by_project.qualix_ip"
 PARAM_QUALIX_VERSION = "conf.triggered_by_project.qualix_version"
+PARAM_QUALIX_IMAG_TAG = "conf.triggered_by_project.image_tag"
 
 
 def trigger_tests(tests_info: "AutoTestsInfo", tc: "TC"):
@@ -116,6 +117,9 @@ def _trigger_auto_tests_build(
 
     if tests_info.qualix_version is not None:
         prop[PARAM_QUALIX_VERSION] = tests_info.qualix_version
+
+    if tests_info.image_tag is not None:
+        prop[PARAM_QUALIX_IMAG_TAG] = tests_info.image_tag
 
     build = tc.trigger_build(
         bt.id,
